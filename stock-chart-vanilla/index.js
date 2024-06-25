@@ -65,9 +65,15 @@ function parseDateTimeToUnix(dateTime) {
 
   // Create a new Date object using the parsed components (month is zero-based in JavaScript)
   const date = new Date(year, month - 1, day, hour, minute, second);
+  
+  //Create offset (5:30) for converting utc to Asia/Kolkata
+  const offset = (5 * 60 * 60 * 1000) + (30 * 60 * 1000);
+
+  // Create a new date with the offset added
+  const newDate = new Date(date.getTime() + offset);
 
   // Return Unix timestamp in seconds
-  return Math.floor(date.getTime() / 1000);
+  return Math.floor(newDate.getTime() / 1000);
 }
 
 
@@ -105,7 +111,7 @@ chart.subscribeCrosshairMove(param => {
 
   if (data) {
     const hoverInfoContent = `
-      <div>Time: ${new Date(param.time * 1000).toLocaleString()}</div>
+      <div>Time: ${(new Date(param.time * 1000 - ((5 * 60 * 60 * 1000) + (30 * 60 * 1000)))).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}</div>
       <div>Open: ${data.open}</div>
       <div>High: ${data.high}</div>
       <div>Low: ${data.low}</div>
