@@ -1,17 +1,6 @@
-//Pseudo code
-//Step 1: Define chart properties.
-//Step 2: Create the chart with defined properties and bind it to the DOM element.
-//Step 3: Add the CandleStick Series.
-//Step 4: Set the data and render.
-//Step5 : Plug the socket to the chart
-
-
-//Code
 const log = console.log;
 
 const chartProperties = {
-  width: 1400,
-  height: 700,
   timeScale: {
     timeVisible: true,
     secondsVisible: false,
@@ -22,6 +11,7 @@ const domElement = document.getElementById('tvchart');
 const chart = LightweightCharts.createChart(domElement, chartProperties);
 const candleSeries = chart.addCandlestickSeries();
 const hoverInfo = document.getElementById('hover-info');
+const spinner = document.getElementById('spinner');
 
 // Function to read CSV file and convert data
 function readCSVFile(filePath) {
@@ -76,6 +66,17 @@ function parseDateTimeToUnix(dateTime) {
   return Math.floor(newDate.getTime() / 1000);
 }
 
+// Show the spinner
+function showSpinner() {
+  spinner.style.display = 'block';
+}
+
+// Hide the spinner
+function hideSpinner() {
+  spinner.style.display = 'none';
+}
+
+showSpinner();
 
 // Path to your CSV file
 const csvFilePath = 'nifty50M.csv';
@@ -95,8 +96,12 @@ readCSVFile(csvFilePath)
     });
     candleSeries.setData(cdata);
     // log(data)
+    hideSpinner();
   })
-  .catch(err => log(err));
+  .catch(err => {
+    log(err)
+    hideSpinner();
+  });
 
 // Handle crosshair move event to display hover info
 chart.subscribeCrosshairMove(param => {

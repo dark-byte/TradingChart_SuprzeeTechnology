@@ -1,39 +1,305 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Stock Chart</title>
     <script src="https://cdn.jsdelivr.net/npm/date-fns@3.6.0/cdn.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/date-fns-tz@3.1.3/dist/cjs/index.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
-    
+
     <style>
-      *{
+      * {
         font-family: sans-serif;
       }
-        #tvchart {
-            position: relative;
+      body {
+        display: flex;
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+      }
+      #tvchart {
+        flex: 1;
+        margin-right: 1rem;
+        position: relative;
+      }
+      #hover-info {
+        position: absolute;
+        top: 0;
+        left: 0;
+        background-color: white;
+        padding: 10px;
+        border: 1px solid black;
+        border-radius: 5px;
+        display: none;
+        pointer-events: none;
+        z-index: 1000;
+      }
+      .spinner {
+        display: none;
+        z-index: 10;
+        position: absolute;
+        top: 40%;
+        right: 50%;
+        width: 44px;
+        height: 44px;
+        animation: spinner-y0fdc1 2s infinite ease;
+        transform-style: preserve-3d;
+      }
+      .spinner > div {
+        background-color: rgba(0, 77, 255, 0.2);
+        height: 100%;
+        position: absolute;
+        width: 100%;
+        border: 2px solid #004dff;
+      }
+      .spinner div:nth-of-type(1) {
+        transform: translateZ(-22px) rotateY(180deg);
+      }
+      .spinner div:nth-of-type(2) {
+        transform: rotateY(-270deg) translateX(50%);
+        transform-origin: top right;
+      }
+      .spinner div:nth-of-type(3) {
+        transform: rotateY(270deg) translateX(-50%);
+        transform-origin: center left;
+      }
+      .spinner div:nth-of-type(4) {
+        transform: rotateX(90deg) translateY(-50%);
+        transform-origin: top center;
+      }
+      .spinner div:nth-of-type(5) {
+        transform: rotateX(-90deg) translateY(50%);
+        transform-origin: bottom center;
+      }
+      .spinner div:nth-of-type(6) {
+        transform: translateZ(22px);
+      }
+      @keyframes spinner-y0fdc1 {
+        0% {
+          transform: rotate(45deg) rotateX(-25deg) rotateY(25deg);
         }
-        #hover-info {
-            position: absolute;
-            top: 0;
-            left: 0;
-            background-color: white;
-            padding: 10px;
-            border: 1px solid black;
-            border-radius: 5px;
-            display: none;
-            pointer-events: none; /* Ensure hover info box doesn't interfere with mouse events on chart */
-            z-index: 1000;
+        50% {
+          transform: rotate(45deg) rotateX(-385deg) rotateY(25deg);
         }
-    </style>
-</head>
-<body>
-    <div id="tvchart"></div>
-    <div id="hover-info"></div>
+        100% {
+          transform: rotate(45deg) rotateX(-385deg) rotateY(385deg);
+        }
+      }
+      #control-panel {
+        width: 300px;
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        font-family: "Arial", sans-serif;
+      }
 
+      #control-panel h3 {
+        z-index: 9;
+        margin-top: 0;
+        font-size: 1.2em;
+        color: #333;
+      }
+
+      .form-group {
+        display: flex;
+        margin-bottom: 10px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        color: #555;
+      }
+
+      .form-group select,
+      .form-group button,
+      .form-group input[type="checkbox"] {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+        transition: border-color 0.3s, box-shadow 0.3s;
+      }
+
+      .form-group select:focus,
+      .form-group button:focus,
+      .form-group input[type="checkbox"]:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+        outline: none;
+      }
+
+      .form-group input[type="checkbox"] {
+        width: auto;
+        margin-right: 10px;
+      }
+
+      .form-group .checkbox-label {
+        display: inline-block;
+        margin-left: 5px;
+        color: #555;
+      }
+
+      #update-chart {
+        width: 100%;
+        background-color: #007bff;
+        padding: 10px 15px;
+        color: white;
+        border: none;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: background-color 0.3s, box-shadow 0.3s;
+      }
+
+      #update-chart:hover {
+        background-color: #247ddd;
+        box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+      }
+      .update-btn-div {
+        margin-top: 2rem;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      /* Smaller Toggle Switch Styles */
+      .toggle-switch {
+        position: relative;
+        display: inline-block;
+        margin-right: 10px;
+        width: 40px;
+        height: 20px;
+      }
+
+      .toggle-input {
+        display: none;
+      }
+
+      .toggle-label {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 40px;
+        height: 20px;
+        border-radius: 10px;
+        background-color: #ccc;
+        cursor: pointer;
+        transition: background-color 0.4s ease;
+      }
+
+      .toggle-label:before {
+        content: "";
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background-color: #fff;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        transition: transform 0.4s ease;
+      }
+
+      .toggle-input:checked + .toggle-label {
+        background-color: #247ddd;
+      }
+
+      .toggle-input:checked + .toggle-label:before {
+        transform: translateX(20px);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="tvchart">
+        <div id="spinner" class="spinner">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+    </div>
+    <div id="control-panel">
+      <h3>Stock Selection</h3>
+      <div class="form-group">
+        <select id="stock-select">
+          <option value="nifty50">Nifty 50</option>
+          <option value="banknifty">Banknifty</option>
+          <option value="hdfc">Hdfc</option>
+          <option value="reliance">Reliance</option>
+          <option value="sbi">SBI</option>
+          <option value="kotak">Kotak Bank</option>
+          <option value="hdfcbank">Hdfc Bank</option>
+          <option value="bajaj">Bajaj Finserve</option>
+          <option value="gold">Gold Futures</option>
+          <option value="silver">Silver Futures</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <select id="interval-select">
+          <option value="1m">1 Minute</option>
+          <option value="5m">5 Minutes</option>
+          <option value="15m">15 Minutes</option>
+          <option value="30m">30 Minutes</option>
+          <option value="1h">1 Hour</option>
+          <option value="4h">4 Hours</option>
+          <option value="1d">1 Day</option>
+        </select>
+      </div>
+      <h3>Patterns</h3>
+      <div class="form-group">
+        <div class="toggle-switch">
+          <input
+            class="toggle-input"
+            id="head-shoulders-toggle"
+            type="checkbox"
+          />
+          <label class="toggle-label" for="head-shoulders-toggle"></label>
+        </div>
+        <label for="head-shoulders" class="checkbox-label"
+          >Head and Shoulders</label
+        >
+      </div>
+      <div class="form-group">
+        <div class="toggle-switch">
+          <input class="toggle-input" id="double-top-toggle" type="checkbox" />
+          <label class="toggle-label" for="double-top-toggle"></label>
+        </div>
+        <label for="double-top" class="checkbox-label">Double Top</label>
+      </div>
+      <div class="form-group">
+        <div class="toggle-switch">
+          <input class="toggle-input" id="triangle-toggle" type="checkbox" />
+          <label class="toggle-label" for="triangle-toggle"></label>
+        </div>
+        <label for="triangle" class="checkbox-label">Triangle</label>
+      </div>
+      <div class="form-group">
+        <div class="toggle-switch">
+          <input class="toggle-input" id="wedge-toggle" type="checkbox" />
+          <label class="toggle-label" for="wedge-toggle"></label>
+        </div>
+        <label for="wedge" class="checkbox-label">Wedge</label>
+      </div>
+      <div class="form-group">
+        <div class="toggle-switch">
+          <input class="toggle-input" id="flag-toggle" type="checkbox" />
+          <label class="toggle-label" for="flag-toggle"></label>
+        </div>
+        <label for="flag" class="checkbox-label">Flag</label>
+      </div>
+      <div class="update-btn-div">
+        <button id="update-chart">Update Chart</button>
+      </div>
+    </div>
+    <div id="hover-info"></div>
+    
     <script src="index.js" defer></script>
-</body>
+  </body>
 </html>
