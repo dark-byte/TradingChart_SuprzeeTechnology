@@ -1,0 +1,1 @@
+{"level":"ERROR","location":"[get_call:142] fyersModel","message":{"API":"/profile","Error":{"s":"error","code":-8,"message":"Your token has expired. Please generate a token"}},"timestamp":"2024-06-29 08:08:59,597+0530","service":"FyersAPI","taskName":"Task-3"}

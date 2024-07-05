@@ -1,5 +1,3 @@
-const log = console.log;
-
 const chartProperties = {
   timeScale: {
     timeVisible: true,
@@ -148,3 +146,111 @@ function hideHoverInfo() {
 //   //log(pl);
 //   candleSeries.update(pl);
 // });
+
+
+// Top Bar Code
+
+document.addEventListener('DOMContentLoaded', () => {
+  const searchButton = document.getElementById('search-button');
+  const searchPopup = document.getElementById('search-popup');
+  const closeButton = document.querySelector('.close-button');
+
+  // Search button click event
+  searchButton.addEventListener('click', () => {
+    searchPopup.style.display = 'block';
+  });
+
+  // Close button click event
+  closeButton.addEventListener('click', () => {
+    searchPopup.style.display = 'none';
+  });
+
+  // Close the popup when clicking outside of it
+  window.addEventListener('click', (event) => {
+    if (event.target == searchPopup) {
+      searchPopup.style.display = 'none';
+    }
+  });
+});
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  const dropdownHeader = document.getElementById('dropdown-header');
+  const dropdownContent = document.getElementById('dropdown-content');
+  const options = document.querySelectorAll('.option');
+
+  let selectedOptions = [];
+
+  // Toggle dropdown visibility on header click
+  dropdownHeader.addEventListener('click', () => {
+    dropdownContent.style.display = dropdownContent.style.display === 'block' ? 'none' : 'block';
+  });
+
+  // Handle option click to toggle selection
+  options.forEach(option => {
+    option.addEventListener('click', () => {
+      const value = option.getAttribute('data-value');
+      option.classList.toggle('selected');
+
+      if (option.classList.contains('selected')) {
+        selectedOptions.push(value);
+      } else {
+        selectedOptions = selectedOptions.filter(item => item !== value);
+      }
+
+    });
+  });
+
+  // Close dropdown when clicking outside
+  window.addEventListener('click', (event) => {
+    if (!dropdownHeader.contains(event.target) && !dropdownContent.contains(event.target)) {
+      dropdownContent.style.display = 'none';
+    }
+  });
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+  // Fullscreen button functionality
+  const fullscreenButton = document.getElementById("fullscreen-button");
+
+  fullscreenButton.addEventListener("click", function() {
+    if (!document.fullscreenElement &&    // alternative standard method
+        !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement ) {
+      const element = document.documentElement; // Fullscreen the entire document
+
+      if (element.requestFullscreen) {
+        element.requestFullscreen();
+      } else if (element.mozRequestFullScreen) { /* Firefox */
+        element.mozRequestFullScreen();
+      } else if (element.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+        element.webkitRequestFullscreen();
+      } else if (element.msRequestFullscreen) { /* IE/Edge */
+        element.msRequestFullscreen();
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.mozCancelFullScreen) { /* Firefox */
+        document.mozCancelFullScreen();
+      } else if (document.webkitExitFullscreen) { /* Chrome, Safari and Opera */
+        document.webkitExitFullscreen();
+      } else if (document.msExitFullscreen) { /* IE/Edge */
+        document.msExitFullscreen();
+      }
+    }
+  });
+});
+
+
+function selectStock(row) {
+  // Get all rows with the class 'stock-row'
+  var rows = document.getElementsByClassName('stock-row');
+  
+  // Remove the 'selected' class from all rows
+  for (var i = 0; i < rows.length; i++) {
+      rows[i].classList.remove('selected');
+  }
+  
+  // Add the 'selected' class to the clicked row
+  row.classList.add('selected');
+}

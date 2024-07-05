@@ -8,298 +8,166 @@
     <script src="https://cdn.jsdelivr.net/npm/date-fns-tz@3.1.3/dist/cjs/index.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
-
-    <style>
-      * {
-        font-family: sans-serif;
-      }
-      body {
-        display: flex;
-        margin: 0;
-        padding: 0;
-        height: 100vh;
-      }
-      #tvchart {
-        flex: 1;
-        margin-right: 1rem;
-        position: relative;
-      }
-      #hover-info {
-        position: absolute;
-        top: 0;
-        left: 0;
-        background-color: white;
-        padding: 10px;
-        border: 1px solid black;
-        border-radius: 5px;
-        display: none;
-        pointer-events: none;
-        z-index: 1000;
-      }
-      .spinner {
-        display: none;
-        z-index: 10;
-        position: absolute;
-        top: 40%;
-        right: 50%;
-        width: 44px;
-        height: 44px;
-        animation: spinner-y0fdc1 2s infinite ease;
-        transform-style: preserve-3d;
-      }
-      .spinner > div {
-        background-color: rgba(0, 77, 255, 0.2);
-        height: 100%;
-        position: absolute;
-        width: 100%;
-        border: 2px solid #004dff;
-      }
-      .spinner div:nth-of-type(1) {
-        transform: translateZ(-22px) rotateY(180deg);
-      }
-      .spinner div:nth-of-type(2) {
-        transform: rotateY(-270deg) translateX(50%);
-        transform-origin: top right;
-      }
-      .spinner div:nth-of-type(3) {
-        transform: rotateY(270deg) translateX(-50%);
-        transform-origin: center left;
-      }
-      .spinner div:nth-of-type(4) {
-        transform: rotateX(90deg) translateY(-50%);
-        transform-origin: top center;
-      }
-      .spinner div:nth-of-type(5) {
-        transform: rotateX(-90deg) translateY(50%);
-        transform-origin: bottom center;
-      }
-      .spinner div:nth-of-type(6) {
-        transform: translateZ(22px);
-      }
-      @keyframes spinner-y0fdc1 {
-        0% {
-          transform: rotate(45deg) rotateX(-25deg) rotateY(25deg);
-        }
-        50% {
-          transform: rotate(45deg) rotateX(-385deg) rotateY(25deg);
-        }
-        100% {
-          transform: rotate(45deg) rotateX(-385deg) rotateY(385deg);
-        }
-      }
-      #control-panel {
-        width: 300px;
-        background-color: #ffffff;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        font-family: "Arial", sans-serif;
-      }
-
-      #control-panel h3 {
-        z-index: 9;
-        margin-top: 0;
-        font-size: 1.2em;
-        color: #333;
-      }
-
-      .form-group {
-        display: flex;
-        margin-bottom: 10px;
-      }
-
-      .form-group label {
-        display: block;
-        margin-bottom: 5px;
-        color: #555;
-      }
-
-      .form-group select,
-      .form-group button,
-      .form-group input[type="checkbox"] {
-        width: 100%;
-        padding: 10px;
-        margin-bottom: 10px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 14px;
-        transition: border-color 0.3s, box-shadow 0.3s;
-      }
-
-      .form-group select:focus,
-      .form-group button:focus,
-      .form-group input[type="checkbox"]:focus {
-        border-color: #007bff;
-        box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
-        outline: none;
-      }
-
-      .form-group input[type="checkbox"] {
-        width: auto;
-        margin-right: 10px;
-      }
-
-      .form-group .checkbox-label {
-        display: inline-block;
-        margin-left: 5px;
-        color: #555;
-      }
-
-      #update-chart {
-        width: 100%;
-        background-color: #007bff;
-        padding: 10px 15px;
-        color: white;
-        border: none;
-        cursor: pointer;
-        border-radius: 4px;
-        transition: background-color 0.3s, box-shadow 0.3s;
-      }
-
-      #update-chart:hover {
-        background-color: #247ddd;
-        box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
-      }
-      .update-btn-div {
-        margin-top: 2rem;
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      /* Smaller Toggle Switch Styles */
-      .toggle-switch {
-        position: relative;
-        display: inline-block;
-        margin-right: 10px;
-        width: 40px;
-        height: 20px;
-      }
-
-      .toggle-input {
-        display: none;
-      }
-
-      .toggle-label {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 40px;
-        height: 20px;
-        border-radius: 10px;
-        background-color: #ccc;
-        cursor: pointer;
-        transition: background-color 0.4s ease;
-      }
-
-      .toggle-label:before {
-        content: "";
-        position: absolute;
-        top: 2px;
-        left: 2px;
-        width: 16px;
-        height: 16px;
-        border-radius: 50%;
-        background-color: #fff;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        transition: transform 0.4s ease;
-      }
-
-      .toggle-input:checked + .toggle-label {
-        background-color: #247ddd;
-      }
-
-      .toggle-input:checked + .toggle-label:before {
-        transform: translateX(20px);
-      }
-    </style>
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div id="tvchart">
-        <div id="spinner" class="spinner">
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
+    <div id="topBar">
+      <div class="top-bar-left">
+        <button id="search-button" class="top-bar-button">
+          <span class="top-search-icon"
+            ><svg
+              xmlns="http://www.w3.org/2000/svg"
+              x="0px"
+              y="0px"
+              width="20"
+              height="20"
+              viewBox="0 0 50 50"
+              style="margin-bottom: -2px;margin-right: 3px;"
+            >
+              <path
+                d="M 21 3 C 11.621094 3 4 10.621094 4 20 C 4 29.378906 11.621094 37 21 37 C 24.710938 37 28.140625 35.804688 30.9375 33.78125 L 44.09375 46.90625 L 46.90625 44.09375 L 33.90625 31.0625 C 36.460938 28.085938 38 24.222656 38 20 C 38 10.621094 30.378906 3 21 3 Z M 21 5 C 29.296875 5 36 11.703125 36 20 C 36 28.296875 29.296875 35 21 35 C 12.703125 35 6 28.296875 6 20 C 6 11.703125 12.703125 5 21 5 Z"
+              ></path></svg>
+          </span>
+          <span style="text-transform: capitalize;" id="selected-stock">Nifty 50</span>
+        </button>
+        <select id="interval-select" class="top-bar-select">
+          <option value="1m">1M</option>
+          <option value="5m">5M</option>
+          <option value="15m">15M</option>
+          <option value="30m">30M</option>
+          <option value="1h">1H</option>
+          <option value="4h">4H</option>
+          <option value="1d">1D</option>
+        </select>
+  
+        <div class="custom-dropdown">
+          <div class="dropdown-header" id="dropdown-header">
+            Select Patterns
           </div>
+          <div class="dropdown-content" id="dropdown-content">
+            <div class="option" data-value="head-shoulders">Head and Shoulders</div>
+            <div class="option" data-value="double-top">Double Top</div>
+            <div class="option" data-value="triangle">Triangle</div>
+            <div class="option" data-value="wedge">Wedge</div>
+            <div class="option" data-value="flag">Flag</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="top-bar-right">
+        <button id="fullscreen-button" class="top-bar-button top-bar-fullscren">
+          <svg xmlns="http://www.w3.org/2000/svg" height="14px" viewBox="0 0 14 14" width="14px">
+            <path fill="#000000" d="M2,9 L0,9 L0,14 L5,14 L5,12 L2,12 L2,9 L2,9 Z M0,5 L2,5 L2,2 L5,2 L5,0 L0,0 L0,5 L0,5 Z M12,12 L9,12 L9,14 L14,14 L14,9 L12,9 L12,12 L12,12 Z M9,0 L9,2 L12,2 L12,5 L14,5 L14,0 L9,0 L9,0 Z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div id="spinner" class="spinner">
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+    <div id="tvchart">
     </div>
     <div id="control-panel">
-      <h3>Stock Selection</h3>
-      <div class="form-group">
-        <select id="stock-select">
-          <option value="nifty50">Nifty 50</option>
-          <option value="banknifty">Banknifty</option>
-          <option value="hdfc">Hdfc</option>
-          <option value="reliance">Reliance</option>
-          <option value="sbi">SBI</option>
-          <option value="kotak">Kotak Bank</option>
-          <option value="hdfcbank">Hdfc Bank</option>
-          <option value="bajaj">Bajaj Finserve</option>
-          <option value="gold">Gold Futures</option>
-          <option value="silver">Silver Futures</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <select id="interval-select">
-          <option value="1m">1 Minute</option>
-          <option value="5m">5 Minutes</option>
-          <option value="15m">15 Minutes</option>
-          <option value="30m">30 Minutes</option>
-          <option value="1h">1 Hour</option>
-          <option value="4h">4 Hours</option>
-          <option value="1d">1 Day</option>
-        </select>
-      </div>
-      <h3>Patterns</h3>
-      <div class="form-group">
-        <div class="toggle-switch">
-          <input
-            class="toggle-input"
-            id="head-shoulders-toggle"
-            type="checkbox"
-          />
-          <label class="toggle-label" for="head-shoulders-toggle"></label>
+      <h3>Watch List</h3>
+      <table id="stock-table">
+          <thead>
+              <tr>
+                  <th>Symbol</th>
+                  <th>Last</th>
+                  <th>Chg</th>
+                  <th>Chg%</th>
+              </tr>
+          </thead>
+          <tbody>
+              <tr class="stock-row selected" onclick="selectStock(this)">
+                  <td>Nifty 50</td>
+                  <td>12345</td>
+                  <td>+123</td>
+                  <td>+1.00%</td>
+              </tr>
+              <tr class="stock-row" onclick="selectStock(this)">
+                  <td>Bank Nifty</td>
+                  <td>23456</td>
+                  <td>+234</td>
+                  <td>+2.00%</td>
+              </tr>
+              <tr class="stock-row" onclick="selectStock(this)">
+                  <td>HDFC</td>
+                  <td>34567</td>
+                  <td>+345</td>
+                  <td>+3.00%</td>
+              </tr>
+              <tr class="stock-row" onclick="selectStock(this)">
+                  <td>Reliance</td>
+                  <td>45678</td>
+                  <td>+456</td>
+                  <td>+4.00%</td>
+              </tr>
+              <tr class="stock-row" onclick="selectStock(this)">
+                  <td>SBI</td>
+                  <td>56789</td>
+                  <td>+567</td>
+                  <td>+5.00%</td>
+              </tr>
+              <tr class="stock-row" onclick="selectStock(this)">
+                  <td>Kotak Bank</td>
+                  <td>67890</td>
+                  <td>+678</td>
+                  <td>+6.00%</td>
+              </tr>
+              <tr class="stock-row" onclick="selectStock(this)">
+                  <td>HDFC Bank</td>
+                  <td>78901</td>
+                  <td>+789</td>
+                  <td>+7.00%</td>
+              </tr>
+              <tr class="stock-row" onclick="selectStock(this)">
+                  <td>Bajaj Finserve</td>
+                  <td>89012</td>
+                  <td>+890</td>
+                  <td>+8.00%</td>
+              </tr>
+              <tr class="stock-row" onclick="selectStock(this)">
+                  <td>Gold</td>
+                  <td>90123</td>
+                  <td>+901</td>
+                  <td>+9.00%</td>
+              </tr>
+              <tr class="stock-row" onclick="selectStock(this)">
+                  <td>Silver</td>
+                  <td>12345</td>
+                  <td>+123</td>
+                  <td>+1.00%</td>
+              </tr>
+              <!-- Add more stock rows as needed -->
+          </tbody>
+      </table>
+  </div>
+
+
+    <div id="hover-info"></div>
+    <div id="search-popup" class="popup">
+      <div class="popup-content">
+        <span class="close-button">&times;</span>
+        <div class="pop-up-search-group">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="icon">
+            <g>
+              <path
+                d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"
+              ></path>
+            </g>
+          </svg>
+          <input class="input" type="search" placeholder="Search" />
         </div>
-        <label for="head-shoulders" class="checkbox-label"
-          >Head and Shoulders</label
-        >
-      </div>
-      <div class="form-group">
-        <div class="toggle-switch">
-          <input class="toggle-input" id="double-top-toggle" type="checkbox" />
-          <label class="toggle-label" for="double-top-toggle"></label>
-        </div>
-        <label for="double-top" class="checkbox-label">Double Top</label>
-      </div>
-      <div class="form-group">
-        <div class="toggle-switch">
-          <input class="toggle-input" id="triangle-toggle" type="checkbox" />
-          <label class="toggle-label" for="triangle-toggle"></label>
-        </div>
-        <label for="triangle" class="checkbox-label">Triangle</label>
-      </div>
-      <div class="form-group">
-        <div class="toggle-switch">
-          <input class="toggle-input" id="wedge-toggle" type="checkbox" />
-          <label class="toggle-label" for="wedge-toggle"></label>
-        </div>
-        <label for="wedge" class="checkbox-label">Wedge</label>
-      </div>
-      <div class="form-group">
-        <div class="toggle-switch">
-          <input class="toggle-input" id="flag-toggle" type="checkbox" />
-          <label class="toggle-label" for="flag-toggle"></label>
-        </div>
-        <label for="flag" class="checkbox-label">Flag</label>
-      </div>
-      <div class="update-btn-div">
-        <button id="update-chart">Update Chart</button>
+        
+        <div id="search-results"></div>
       </div>
     </div>
-    <div id="hover-info"></div>
-    
     <script src="index.js" defer></script>
   </body>
 </html>
